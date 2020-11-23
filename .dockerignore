@@ -1,0 +1,5 @@
+.git/
+.venv/
+*.swp
+__pycache__
+Dockerfile*

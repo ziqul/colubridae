@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.4
+    ports:
+      - 5672:5672
+
+  redis:
+    image: redis:6.0.5
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: python -m server
+    volumes:
+      - ./src/:/app/
+    env_file:
+      - .env
+    ports:
+      - 8080:8080
+    depends_on:
+      - rabbitmq
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: celery -A worker worker -l info
+    volumes:
+      - ./src/:/app/
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+      - redis
